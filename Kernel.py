@@ -17,7 +17,7 @@ import sys
 import time
 import threading
 import xml.sax
-from LangSupport import LangSupport
+from LangSupport import UnicodeSupport
 
 class Kernel:
     # module constants
@@ -35,7 +35,7 @@ class Kernel:
     _inputStack = "_inputStack"
 
     def __init__(self):
-        self._langSupport = LangSupport()
+        self._langSupport = UnicodeSupport(encoding='utf8')
         self._verboseMode = True
         self._version = "PyAIML 0.8.6"
         self._brain = PatternMgr()
@@ -857,8 +857,7 @@ class Kernel:
         newInput = ""
         for e in elem[2:]:
             newInput += self._processElement(e, sessionID)
-            cnNewInput = self.langSupport.input(newInput)
-        return self._respond(cnNewInput, sessionID)
+        return self._respond(newInput, sessionID)
 
     # <star>
     def _processStar(self, elem, sessionID):

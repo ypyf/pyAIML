@@ -150,7 +150,7 @@ class PatternMgr:
 		topicInput = re.sub(self._puncStripRE, " ", topicInput)
 
 		# Pass the input off to the recursive call
-		print "######## %s" % input
+		# print "******** %s" % input
 		patMatch, template = self._match(input.split(), thatInput.split(), topicInput.split(), self._root)
 		return template
 

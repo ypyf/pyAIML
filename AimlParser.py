@@ -3,7 +3,7 @@ from xml.sax.xmlreader import Locator
 import sys
 import xml.sax
 import xml.sax.handler
-from LangSupport import LangSupport
+from LangSupport import UnicodeSupport
 
 class AimlParserError(Exception): pass
 
@@ -20,7 +20,7 @@ class AimlHandler(ContentHandler):
 	_STATE_AfterTemplate  = 8
 
 	def __init__(self, encoding = "UTF-8"):
-		self._LangSupport = LangSupport()
+		self._LangSupport = UnicodeSupport(encoding=encoding)
 		self.categories = {}
 		self._encoding = encoding
 		self._state = self._STATE_OutsideAiml
@@ -371,7 +371,7 @@ class AimlHandler(ContentHandler):
 			# End the current category.  Store the current pattern/that/topic and
 			# element in the categories dictionary.
 			cnPattern = self._LangSupport.input(self._currentPattern.strip())
-			print u'@@@@@@ %s' % cnPattern
+			# print u'@@@@@@ %s' % cnPattern
 			key = (cnPattern, self._currentThat.strip(),self._currentTopic.strip())
 			self.categories[key] = self._elemStack[-1]
 			self._whitespaceBehaviorStack.pop()
