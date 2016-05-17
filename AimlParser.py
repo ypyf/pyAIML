@@ -3,6 +3,7 @@ from xml.sax.xmlreader import Locator
 import sys
 import xml.sax
 import xml.sax.handler
+from LangSupport import LangSupport
 
 class AimlParserError(Exception): pass
 
@@ -17,8 +18,9 @@ class AimlHandler(ContentHandler):
 	_STATE_AfterThat      = 6
 	_STATE_InsideTemplate = 7
 	_STATE_AfterTemplate  = 8
-	
+
 	def __init__(self, encoding = "UTF-8"):
+		self._LangSupport = LangSupport()
 		self.categories = {}
 		self._encoding = encoding
 		self._state = self._STATE_OutsideAiml
@@ -55,7 +57,7 @@ class AimlHandler(ContentHandler):
 		# attribute (if absent, the top of the stack is pushed again).  When
 		# ending an element, pop an object off the stack.
 		self._whitespaceBehaviorStack = ["default"]
-		
+
 		self._elemStack = []
 		self._locator = Locator()
 		self.setDocumentLocator(self._locator)
@@ -106,7 +108,7 @@ class AimlHandler(ContentHandler):
 	def startElement(self, name, attr):
 		# Wrapper around _startElement, which catches errors in _startElement()
 		# and keeps going.
-		
+
 		# If we're inside an unknown element, ignore everything until we're
 		# out again.
 		if self._currentUnknown != "":
@@ -121,12 +123,12 @@ class AimlHandler(ContentHandler):
 		except AimlParserError, msg:
 			# Print the error message
 			sys.stderr.write("PARSE ERROR: %s\n" % msg)
-			
+
 			self._numParseErrors += 1 # increment error count
 			# In case of a parse error, if we're inside a category, skip it.
 			if self._state >= self._STATE_InsideCategory:
 				self._skipCurrentCategory = True
-			
+
 	def _startElement(self, name, attr):
 		if name == "aiml":
 			# <aiml> tags are only legal in the OutsideAiml state
@@ -144,7 +146,7 @@ class AimlHandler(ContentHandler):
 				#print "         Defaulting to version 1.0"
 				self._version = "1.0"
 			self._forwardCompatibleMode = (self._version != "1.0.1")
-			self._pushWhitespaceBehavior(attr)			
+			self._pushWhitespaceBehavior(attr)
 			# Not sure about this namespace business yet...
 			#try:
 			#	self._namespace = attr["xmlns"]
@@ -259,7 +261,7 @@ class AimlHandler(ContentHandler):
 			# In case of a parse error, if we're inside a category, skip it.
 			if self._state >= self._STATE_InsideCategory:
 				self._skipCurrentCategory = True
-			
+
 	def _characters(self, ch):
 		text = unicode(ch)
 		if self._state == self._STATE_InsidePattern:
@@ -291,7 +293,7 @@ class AimlHandler(ContentHandler):
 			except IndexError:
 				# the element stack is empty. This should never happen.
 				raise AimlParserError, "Element stack is empty while validating text "+self._location()
-			
+
 			# Add a new text element to the element at the top of the element
 			# stack. If there's already a text element there, simply append the
 			# new characters to its contents.
@@ -309,12 +311,12 @@ class AimlHandler(ContentHandler):
 	def endElementNS(self, name, qname):
 		uri, elem = name
 		self.endElement(elem)
-		
+
 	def endElement(self, name):
 		"""Wrapper around _endElement which catches errors in _characters()
 		and keeps going.
 
-		"""		
+		"""
 		if self._state == self._STATE_OutsideAiml:
 			# If we're outside of an AIML element, ignore all tags
 			return
@@ -368,7 +370,9 @@ class AimlHandler(ContentHandler):
 			self._state = self._STATE_InsideAiml
 			# End the current category.  Store the current pattern/that/topic and
 			# element in the categories dictionary.
-			key = (self._currentPattern.strip(), self._currentThat.strip(),self._currentTopic.strip())
+			cnPattern = self._LangSupport.input(self._currentPattern.strip())
+			print u'@@@@@@ %s' % cnPattern
+			key = (cnPattern, self._currentThat.strip(),self._currentTopic.strip())
 			self.categories[key] = self._elemStack[-1]
 			self._whitespaceBehaviorStack.pop()
 		elif name == "pattern":
@@ -454,10 +458,10 @@ class AimlHandler(ContentHandler):
 		This function raises an AimlParserError exception if it the tag is
 		invalid.  Otherwise, no news is good news.
 
-		"""		
+		"""
 		# Check the element's attributes.  Make sure that all required
 		# attributes are present, and that any remaining attributes are
-		# valid options.		
+		# valid options.
 		required, optional, canBeParent = self._validInfo[name]
 		for a in required:
 			if a not in attr and not self._forwardCompatibleMode:

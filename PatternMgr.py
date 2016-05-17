@@ -16,7 +16,7 @@ class PatternMgr:
 	_THAT       = 3
 	_TOPIC		= 4
 	_BOT_NAME   = 5
-	
+
 	def __init__(self):
 		self._root = {}
 		self._templateCount = 0
@@ -124,7 +124,7 @@ class PatternMgr:
 
 		# add the template.
 		if not node.has_key(self._TEMPLATE):
-			self._templateCount += 1	
+			self._templateCount += 1
 		node[self._TEMPLATE] = template
 
 	def match(self, pattern, that, topic):
@@ -133,7 +133,7 @@ class PatternMgr:
 		parameter contains the current topic of conversation.
 
 		Returns None if no template is found.
-		
+
 		"""
 		if len(pattern) == 0:
 			return None
@@ -148,8 +148,9 @@ class PatternMgr:
 		if topic.strip() == u"": topic = u"ULTRABOGUSDUMMYTOPIC" # 'topic' must never be empty
 		topicInput = string.upper(topic)
 		topicInput = re.sub(self._puncStripRE, " ", topicInput)
-		
+
 		# Pass the input off to the recursive call
+		print "######## %s" % input
 		patMatch, template = self._match(input.split(), thatInput.split(), topicInput.split(), self._root)
 		return template
 
@@ -197,7 +198,7 @@ class PatternMgr:
 		else:
 			# unknown value
 			raise ValueError, "starType must be in ['star', 'thatstar', 'topicstar']"
-		
+
 		# compare the input string to the matched pattern, word by word.
 		# At the end of this loop, if foundTheRightStar is true, start and
 		# end will contain the start and end indices (in "words") of
@@ -238,7 +239,7 @@ class PatternMgr:
 					break
 			# Move to the next element of the pattern.
 			j += 1
-			
+
 		# extract the star words from the original, unmutilated input.
 		if foundTheRightStar:
 			#print string.join(pattern.split()[start:end+1])
@@ -252,7 +253,7 @@ class PatternMgr:
 		at the root and leading to the matching pattern, and tem is the
 		matched template.
 
-		""" 
+		"""
 		# base-case: if the word list is empty, return the current node's
 		# template.
 		if len(words) == 0:
@@ -288,7 +289,7 @@ class PatternMgr:
 
 		first = words[0]
 		suffix = words[1:]
-		
+
 		# Check underscore.
 		# Note: this is causing problems in the standard AIML set, and is
 		# currently disabled.
@@ -315,7 +316,7 @@ class PatternMgr:
 			if template is not None:
 				newPattern = [first] + pattern
 				return (newPattern, template)
-		
+
 		# check star
 		if root.has_key(self._STAR):
 			# Must include the case where suf is [] in order to handle the case
@@ -328,4 +329,4 @@ class PatternMgr:
 					return (newPattern, template)
 
 		# No matches were found.
-		return (None, None)			
+		return (None, None)
