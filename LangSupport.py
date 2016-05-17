@@ -2,8 +2,8 @@ import re
 from string import join as str_join
 
 findall_gb = re.compile('[\x81-\xff][\x00-\xff]|[^\x81-\xff]+').findall
-findall_utf8 = re.compile('[\u2e80-\uffff]|[^\u2e80-\uffff]+').findall
 sub_gb = re.compile('([\x81-\xff][\x00-\xff]) +(?=[\x81-\xff][\x00-\xff])').sub
+findall_utf8 = re.compile(ur'[\u2e80-\uffff]|[^\u2e80-\uffff]+').findall
 sub_utf8 = re.compile('([\u2e80-\uffff]) +(?=[\u2e80-\uffff])').sub
 sub_space = re.compile(' +').sub
 

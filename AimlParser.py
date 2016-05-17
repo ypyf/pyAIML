@@ -370,8 +370,9 @@ class AimlHandler(ContentHandler):
 			self._state = self._STATE_InsideAiml
 			# End the current category.  Store the current pattern/that/topic and
 			# element in the categories dictionary.
-			cnPattern = self._LangSupport.input(self._currentPattern.strip())
-			# print u'@@@@@@ %s' % cnPattern
+			currentPattern = self._currentPattern.strip()
+			print u'Learned pattern %s' % currentPattern
+			cnPattern = self._LangSupport.input(currentPattern)
 			key = (cnPattern, self._currentThat.strip(),self._currentTopic.strip())
 			self.categories[key] = self._elemStack[-1]
 			self._whitespaceBehaviorStack.pop()

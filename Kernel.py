@@ -857,7 +857,8 @@ class Kernel:
         newInput = ""
         for e in elem[2:]:
             newInput += self._processElement(e, sessionID)
-        return self._respond(newInput, sessionID)
+        cnNewInput = self._langSupport.input(newInput)
+        return self._respond(cnNewInput, sessionID)
 
     # <star>
     def _processStar(self, elem, sessionID):

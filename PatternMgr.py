@@ -150,7 +150,6 @@ class PatternMgr:
 		topicInput = re.sub(self._puncStripRE, " ", topicInput)
 
 		# Pass the input off to the recursive call
-		# print "******** %s" % input
 		patMatch, template = self._match(input.split(), thatInput.split(), topicInput.split(), self._root)
 		return template
 
@@ -289,7 +288,6 @@ class PatternMgr:
 
 		first = words[0]
 		suffix = words[1:]
-
 		# Check underscore.
 		# Note: this is causing problems in the standard AIML set, and is
 		# currently disabled.
